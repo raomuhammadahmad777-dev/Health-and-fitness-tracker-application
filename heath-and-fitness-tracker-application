@@ -60,3 +60,40 @@ public:
         day++;
     }
 };
+
+
+
+class Exercise {
+protected:
+    QString name;
+    QString duration;
+    int calories;
+public:
+    Exercise(QString n, QString d, int c) : name(n), duration(d), calories(c) {}
+
+    virtual ~Exercise() {}
+
+    virtual QString getLabel() const = 0;
+
+    int getCalories() const { return calories; }
+};
+
+
+class CardioExercise : public Exercise {
+public:
+    CardioExercise(QString n, QString d, int c) : Exercise(n, d, c) {}
+
+    QString getLabel() const override {
+        return name + "\n" + duration + " | " + QString::number(calories) + " kcal";              // running
+    }                                                                                             // 20 min | 125 kcal
+};
+
+
+class StrengthExercise : public Exercise {
+public:
+    StrengthExercise(QString n, QString d, int c) : Exercise(n, d, c) {}
+
+    QString getLabel() const override {
+        return name + "\n" + duration + " | " + QString::number(calories) + " kcal";
+    }
+};
