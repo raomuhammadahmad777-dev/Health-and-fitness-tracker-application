@@ -1,0 +1,27 @@
+#include <QApplication>
+#include <QWidget>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QLabel>
+#include <QFrame>
+#include <QProgressBar>
+#include <QStackedWidget>
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
+#include <QMessageBox>
+#include <QVector>
+#include <QScrollArea>
+
+
+QWidget* start();
+QWidget* login();
+QWidget* signup();
+QWidget* dashboard();
+QWidget* workout();
+QWidget* historyPage();
+QWidget* bmiPage();
+QWidget* dietPage();
+
