@@ -25,3 +25,38 @@ QWidget* historyPage();
 QWidget* bmiPage();
 QWidget* dietPage();
 
+
+class User {
+    QString username;
+    QString password;
+    int day = 1;
+    double daily = 0;
+    double total = 0;
+    QVector<double> history;
+public:
+    void set(QString u, QString p, int d, QVector<double> h, double da, double t) {
+        username = u;
+        password = p;
+        day = d;
+        history = h;
+        daily = da;
+        total = t;
+    }
+
+    QString u() { return username; }
+    QString p() { return password; }
+    int getDay() { return day; }
+    double getTotal() { return total; }
+    QVector<double> getHistory() { return history; }
+
+    void add(double cal) {
+        daily += cal;
+    }
+
+    void nextDay() {
+        history.append(daily);
+        total += daily;
+        daily = 0;
+        day++;
+    }
+};
