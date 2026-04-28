@@ -155,8 +155,9 @@ This project demonstrates strong use of Object-Oriented Programming:
 ## 👨‍💻 Authors
 
 * OOP Project by students
-* Muhammad Ahmad (25K-0587)
-* Hasnain Ali (25K-0841)
+
+  * Muhammad Ahmad (25K-0587)
+  * Hasnain Ali (25K-0841)
 
 ---
 
