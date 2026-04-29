@@ -97,3 +97,77 @@ public:
         return name + "\n" + duration + " | " + QString::number(calories) + " kcal";
     }
 };
+
+
+class FoodCategory {
+public:
+    virtual ~FoodCategory() {}
+
+    virtual QString title() const = 0;
+
+    virtual QString content() const = 0;
+};
+
+class ProteinCategory : public FoodCategory {
+public:
+    QString title() const override { return "Proteins"; }
+
+    QString content() const override {
+        return "1) Eggs - rich in high-quality protein & vitamins\n"
+               "2) Chicken - lean protein for muscle growth\n"
+               "3) Fish - protein + omega-3 fatty acids\n"
+               "4) Beans/Lentils - plant protein + fiber\n"
+               "\nBenefits: Muscle repair, strength, recovery";
+    }
+};
+
+class CarbCategory : public FoodCategory {
+public:
+    QString title() const override { return "Carbohydrates"; }
+
+    QString content() const override {
+        return "1) Rice - quick energy source\n"
+               "2) Oats - complex carbs + fiber\n"
+               "3) Whole wheat bread - sustained energy\n"
+               "\nBenefits: Energy, endurance, brain function";
+    }
+};
+
+class FruitsVegCategory : public FoodCategory {
+public:
+    QString title() const override { return "Fruits & Vegetables"; }
+
+    QString content() const override {
+        return "1) Apple - fiber & antioxidants\n"
+               "2) Banana - potassium & energy\n"
+               "3) Spinach - iron & vitamins\n"
+               "4) Broccoli - vitamins C & K\n"
+               "\nBenefits: Immunity, digestion, overall health";
+    }
+};
+
+class HydrationCategory : public FoodCategory {
+public:
+    QString title() const override { return "Hydration"; }
+
+    QString content() const override {
+        return "1) Drink 2.5 - 4 liters of water daily\n"
+               "2) More if doing workouts\n"
+               "3) Include coconut water or electrolytes\n"
+               "\nBenefits: Better metabolism, energy, and recovery";
+    }
+};
+
+class AvoidCategory : public FoodCategory {
+public:
+    QString title() const override { return "Foods to Avoid"; }
+
+    QString content() const override {
+        return "1) Sugary drinks - cause fat gain & energy crashes\n"
+               "2) Junk/fast food - high unhealthy fats\n"
+               "3) Excess fried food - increases cholesterol\n"
+               "4) Processed snacks - low nutrients\n"
+               "\nReason: Leads to weight gain, poor health, low energy";
+    }
+};
+
