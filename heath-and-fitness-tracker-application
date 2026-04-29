@@ -320,3 +320,239 @@ QWidget* signup() {
     return w;
 }
 
+
+
+QWidget* historyPage() {
+    QWidget *w = new QWidget;
+    QVBoxLayout *l = new QVBoxLayout;
+
+    l->addWidget(new QLabel("Progress & History"));
+
+    QVector<double> h = current.getHistory();
+
+    for (int i = 0; i < h.size(); i++) {
+        l->addWidget(new QLabel(
+            "Day " + QString::number(i + 1) + " - " + QString::number(h[i]) + " kcal" ));
+    }
+
+    QPushButton *back = new QPushButton("Back");
+
+    QObject::connect(back, &QPushButton::clicked, []{ stack->setCurrentIndex(3); });
+
+    l->addWidget(back);
+    w->setLayout(l);
+    return w;
+}
+
+
+QWidget* workout() {
+    QWidget *w = new QWidget;
+    QVBoxLayout *main = new QVBoxLayout;
+
+    QProgressBar *bar = new QProgressBar;
+    main->addWidget(bar);
+
+    int *progress = new int(0);
+
+    QVector<Exercise*> exercises = {
+        new CardioExercise("Jumping Jacks", "10 min", 46),
+        new CardioExercise("Burpees", "15 min", 248),
+        new CardioExercise("Running", "20 min", 125),
+        new StrengthExercise("Squats", "12 min", 59)
+    };
+
+    for (Exercise* ex : exercises) {
+        QFrame *card = new QFrame;
+        QHBoxLayout *l = new QHBoxLayout;
+
+        QLabel *txt = new QLabel(ex->getLabel());
+        QPushButton *done = new QPushButton("Mark Done");
+
+        int cal = ex->getCalories();
+
+        QObject::connect(done, &QPushButton::clicked, [=]() mutable {
+            current.add(cal);
+            done->setText("Done ?");
+            done->setEnabled(false);
+            *progress += 25;
+            bar->setValue(*progress); });
+
+        l->addWidget(txt);
+        l->addStretch();
+        l->addWidget(done);
+        card->setLayout(l);
+        main->addWidget(card);
+    }
+
+    QPushButton *finish = new QPushButton("Finish Day");
+    QObject::connect(finish, &QPushButton::clicked, [=]() {
+        current.nextDay();
+        save();
+        stack->removeWidget(stack->widget(3));
+        stack->insertWidget(3, dashboard());
+        stack->setCurrentIndex(3); });
+
+    main->addWidget(finish);
+    w->setLayout(main);
+    return w;
+}
+
+
+QWidget* bmiPage() {
+    QWidget *w = new QWidget;
+    QVBoxLayout *l = new QVBoxLayout;
+
+    QLineEdit *weight = new QLineEdit;
+    QLineEdit *height = new QLineEdit;
+    QLabel *res = new QLabel;
+
+    QPushButton *calc = new QPushButton("Calculate");
+    QPushButton *back = new QPushButton("Back");
+
+    l->addWidget(new QLabel("Weight (kg)"));
+    l->addWidget(weight);
+    l->addWidget(new QLabel("Height (m)"));
+    l->addWidget(height);
+    l->addWidget(calc);
+    l->addWidget(res);
+    l->addWidget(back);
+
+    QObject::connect(calc, &QPushButton::clicked, [=]() {
+        double wv = weight->text().toDouble();
+        double hv = height->text().toDouble();
+        double bmi = wv / (hv * hv);
+        double mn = 18.5 * hv * hv;
+        double mx = 24.9 * hv * hv;
+
+        QString status = (bmi < 18.5 ? "Underweight" : (bmi < 25 ? "Healthy" : (bmi < 30 ? "Overweight" : "Obese")));
+
+        res->setText(
+            "BMI: " + QString::number(bmi, 'f', 2) + "\nStatus: " + status + "\nIdeal Weight: " + QString::number(mn, 'f', 1) + " - " + QString::number(mx, 'f', 1) + " kg" );
+    });
+
+    QObject::connect(back, &QPushButton::clicked, []{ stack->setCurrentIndex(3); });
+
+    w->setLayout(l);
+    return w;
+}
+
+
+QWidget* dietPage() {
+    QWidget *w = new QWidget;
+    QVBoxLayout *main = new QVBoxLayout;
+
+    QVector<FoodCategory*> categories = {
+        new ProteinCategory(),
+        new CarbCategory(),
+        new FruitsVegCategory(),
+        new HydrationCategory(),
+        new AvoidCategory()
+    };
+
+    for (FoodCategory* cat : categories) {
+        QFrame *c = new QFrame;
+        QVBoxLayout *l = new QVBoxLayout;
+
+        QLabel *t = new QLabel(cat->title());
+        t->setStyleSheet("font-weight:bold; font-size:14px;");
+
+        QLabel *d = new QLabel(cat->content());
+        d->setWordWrap(true);
+
+        l->addWidget(t);
+        l->addWidget(d);
+        c->setLayout(l);
+        main->addWidget(c);
+
+        delete cat;
+    }
+
+    QPushButton *back = new QPushButton("Back");
+    QObject::connect(back, &QPushButton::clicked, []{ stack->setCurrentIndex(3); });
+    main->addWidget(back);
+
+    QWidget *container = new QWidget;
+    container->setLayout(main);
+
+    QScrollArea *scroll = new QScrollArea;
+    scroll->setWidget(container);
+    scroll->setWidgetResizable(true);
+    scroll->setFrameShape(QFrame::NoFrame);
+
+    QVBoxLayout *outer = new QVBoxLayout;
+    outer->addWidget(scroll);
+    w->setLayout(outer);
+    return w;
+}
+
+
+
+QWidget* dashboard() {
+    QWidget *w = new QWidget;
+    QVBoxLayout *main = new QVBoxLayout;
+
+    main->addWidget(new QLabel("Days Completed: " + QString::number(current.getDay() - 1)));
+    main->addWidget(new QLabel("Total Calories: "  + QString::number(current.getTotal())));
+
+    QPushButton *work = new QPushButton("Workout");
+    QPushButton *hist = new QPushButton("History");
+    QPushButton *bmi = new QPushButton("BMI");
+    QPushButton *diet = new QPushButton("Diet");
+    QPushButton *logout = new QPushButton("Logout");
+
+    main->addWidget(work);
+    main->addWidget(hist);
+    main->addWidget(bmi);
+    main->addWidget(diet);
+    main->addWidget(logout);
+
+    QObject::connect(work, &QPushButton::clicked, []{
+        stack->removeWidget(stack->widget(4));
+        stack->insertWidget(4, workout());
+        stack->setCurrentIndex(4);
+    });
+    QObject::connect(hist, &QPushButton::clicked, []{
+        stack->removeWidget(stack->widget(5));
+        stack->insertWidget(5, historyPage());
+        stack->setCurrentIndex(5);
+    });
+    QObject::connect(bmi, &QPushButton::clicked, []{
+        stack->removeWidget(stack->widget(6));
+        stack->insertWidget(6, bmiPage());
+        stack->setCurrentIndex(6);
+    });
+    QObject::connect(diet, &QPushButton::clicked, []{
+        stack->removeWidget(stack->widget(7));
+        stack->insertWidget(7, dietPage());
+        stack->setCurrentIndex(7);
+    });
+    QObject::connect(logout, &QPushButton::clicked, []{
+        current = User();
+        stack->setCurrentIndex(0);
+    });
+
+    w->setLayout(main);
+    return w;
+}
+
+
+int main(int argc, char *argv[]) {
+    QApplication a(argc, argv);
+
+    stack = new QStackedWidget;
+    stack->addWidget(start());
+    stack->addWidget(login());
+    stack->addWidget(signup());
+    stack->addWidget(dashboard());
+    stack->addWidget(workout());
+    stack->addWidget(historyPage());
+    stack->addWidget(bmiPage());
+    stack->addWidget(dietPage());
+
+    stack->setStyleSheet(style);
+    stack->resize(420, 600);
+    stack->setMinimumSize(380, 550);
+    stack->show();
+
+    return a.exec();
+}
