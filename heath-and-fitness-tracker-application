@@ -284,3 +284,39 @@ QWidget* login() {
     w->setLayout(l);
     return w;
 }
+
+
+QWidget* signup() {
+    QWidget *w = new QWidget;
+    QVBoxLayout *l = new QVBoxLayout;
+
+    QLineEdit *u = new QLineEdit;
+    QLineEdit *p = new QLineEdit;
+
+    QPushButton *create = new QPushButton("Create Profile");
+    QPushButton *back = new QPushButton("Back");
+
+    l->addWidget(new QLabel("Username"));
+    l->addWidget(u);
+    l->addWidget(new QLabel("Password"));
+    l->addWidget(p);
+    l->addWidget(create);
+    l->addWidget(back);
+
+    QObject::connect(create, &QPushButton::clicked, [=]() {
+        if (u->text().isEmpty() || p->text().isEmpty()) {
+            QMessageBox::warning(w, "Error", "Fill all fields");
+            return;
+        }
+        current.set(u->text(), p->text(), 1, {}, 0, 0);
+        save();
+        QMessageBox::information(w, "Success", "Profile Created!");
+        stack->setCurrentIndex(0);
+    });
+
+    QObject::connect(back, &QPushButton::clicked, []{ stack->setCurrentIndex(0); });
+
+    w->setLayout(l);
+    return w;
+}
+
