@@ -192,3 +192,24 @@ void save() {
         for (double d : h) o << d << "\n";
     }
 }
+
+
+bool load(QString u, QString p) {
+    QFile f(path(u));
+
+    if (f.open(QIODevice::ReadOnly)) {
+        QTextStream in(&f);
+        QString name = in.readLine();
+        QString pass = in.readLine();
+        int d = in.readLine().toInt();
+        double total = in.readLine().toDouble();
+        int size = in.readLine().toInt();
+        QVector<double> hist;
+        for (int i = 0; i < size; i++) hist.append(in.readLine().toDouble());
+        if (name == u && pass == p) {
+            current.set(name, pass, d, hist, 0, total);
+            return true;
+        }
+    }
+    return false;
+}
