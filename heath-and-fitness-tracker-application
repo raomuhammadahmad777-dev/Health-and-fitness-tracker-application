@@ -171,3 +171,24 @@ public:
     }
 };
 
+
+User current;
+QStackedWidget *stack;
+
+QString path(QString u) {
+    QDir().mkdir("users");
+    return "users/" + u + ".txt";
+}
+
+void save() {
+    QFile f(path(current.u()));
+
+    if (f.open(QIODevice::WriteOnly)) {
+        QTextStream o(&f);
+        o << current.u() << "\n" << current.p() << "\n";
+        o << current.getDay() << "\n" << current.getTotal() << "\n";
+        QVector<double> h = current.getHistory();
+        o << h.size() << "\n";
+        for (double d : h) o << d << "\n";
+    }
+}
