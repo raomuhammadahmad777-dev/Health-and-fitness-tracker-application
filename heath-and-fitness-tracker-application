@@ -230,3 +230,57 @@ QProgressBar { background:#1f2937; border-radius:6px; }
 
 QProgressBar::chunk { background:#22c55e; }
 )";
+
+
+
+QWidget* start() {
+    QWidget *w = new QWidget;
+    QVBoxLayout *l = new QVBoxLayout;
+
+    QPushButton *loginBtn = new QPushButton("Login");
+    QPushButton *signupBtn = new QPushButton("Create Profile");
+
+    l->addWidget(loginBtn);
+    l->addWidget(signupBtn);
+
+    QObject::connect(loginBtn, &QPushButton::clicked, []{ stack->setCurrentIndex(1); });
+    QObject::connect(signupBtn, &QPushButton::clicked, []{ stack->setCurrentIndex(2); });
+
+    w->setLayout(l);
+    return w;
+}
+
+
+QWidget* login() {
+    QWidget *w = new QWidget;
+    QVBoxLayout *l = new QVBoxLayout;
+
+    QLineEdit *u = new QLineEdit;
+    QLineEdit *p = new QLineEdit;
+    p->setEchoMode(QLineEdit::Password);
+
+    QPushButton *btn = new QPushButton("Login");
+    QPushButton *back = new QPushButton("Back");
+
+    l->addWidget(new QLabel("Username"));
+    l->addWidget(u);
+    l->addWidget(new QLabel("Password"));
+    l->addWidget(p);
+    l->addWidget(btn);
+    l->addWidget(back);
+
+    QObject::connect(btn, &QPushButton::clicked, [=]() {
+        if (load(u->text(), p->text())) {
+            stack->removeWidget(stack->widget(3));
+            stack->insertWidget(3, dashboard());
+            stack->setCurrentIndex(3);
+        } else {
+            QMessageBox::warning(w, "Error", "Invalid login");
+        }
+    });
+
+    QObject::connect(back, &QPushButton::clicked, []{ stack->setCurrentIndex(0); });
+
+    w->setLayout(l);
+    return w;
+}
